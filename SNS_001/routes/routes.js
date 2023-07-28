@@ -1,5 +1,5 @@
 const express = require("express");
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 const router = express.Router();
 const path = require('path');
 const db = require('../models/db');
@@ -51,6 +51,9 @@ router.post('/signin', (req, res) => {
         if (user) {
             // ユーザーが見つかった場合
             // ユーザーが入力したパスワードとデータベースから取得したハッシュ化されたパスワードを比較
+
+            //パスワードをハッシュ化
+            /*
             bcrypt.compare(password, user.password_hash, (err, result) => {
                 if (err) {
                     console.error('Error comparing passwords:', err);
@@ -68,6 +71,26 @@ router.post('/signin', (req, res) => {
                     res.render('signin', { error: 'Invalid credentials' });
                 }
             });
+            */
+
+            // パスワードの平文を比較する関数
+            function comparePasswords(plainPassword,Password) {
+                return plainPassword === Password;
+            }
+
+            if (comparePasswords(password, user.password_hash)) {
+                // パスワードが一致した場合の処理（認証成功）
+                console.log('Authentication successful!');
+                return res.redirect(`/${user.user_id}`);
+                // ユーザーに対してアクセスを許可
+            } else {
+                // パスワードが一致しない場合の処理（認証失敗）
+                console.log('Authentication failed. Invalid password.');
+                // ログインを拒否
+                res.render('signin', { error: 'Invalid credentials' });
+            }
+
+            //ここまで平文比較ver
             
         } else {
             // ユーザーが見つからなかった場合
@@ -88,6 +111,8 @@ router.post('/signup', (req, res) => {
     const email = req.body.email;
     console.log(user_id, username, email)
 
+    //パスワードをハッシュ化
+    /*
     passwordUtils.hashPassword(password)
     .then(hashedPassword => {
         console.log('Hashed password:', hashedPassword);
@@ -102,6 +127,15 @@ router.post('/signup', (req, res) => {
     .catch(error => {
         console.error('Error:', error);
     });
+    */
+    console.log('password:', password);
+        db.none('INSERT INTO users(user_id, username, password_hash, email) VALUES($1, $2, $3, $4)', [user_id, username, password, email])
+        .then(() => {
+            console.log('データが正常に挿入されました');
+        })
+        .catch(error => {
+            console.error('データベースクエリエラー:', error.message || error);
+        });
 
 });
 
