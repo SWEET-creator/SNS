@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt');
+//const bcrypt = require('bcrypt');
 const saltRounds = 10; // ハッシュ化のコストパラメータ（推奨値は10）
 
 async function hashPassword(password) {

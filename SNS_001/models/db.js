@@ -4,8 +4,8 @@ var connection = {
     host: 'localhost',
     port: 5432,
     database: 'SNS',
-    user: 
-    password: 
+    user: "",
+    password: ""
 };
  
 var db = pgp(connection);
